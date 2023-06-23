@@ -139,20 +139,80 @@ Djangoソースコードをクローンする
 
 ```
 cd ~
-git clone https://github.com/naritotakizawa/gourp_e
+git clone https://github.com/naritotakizawa/group_e
 ```
+
+本番環境ようのsettingsを作成する
+
+```commandline
+nano conf/production_settings.py
+```
+
+中身を次のようにする
+
+```
+import os
+from .settings import *
+
+ALLOWED_HOSTS = ['54.250.226.14']
+
+DEBUG = False
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'djangodb',
+        'USER': 'django_user',
+        'PASSWORD': 'django',
+        'HOST': '',
+        'PORT': 5432,
+    }
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
+
+        },
+    },
+    'handlers': {
+        'file': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': '/var/log/django.log',
+            'formatter': 'standard',
+            'when': 'W0',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+        },
+    },
+}
+
+STATIC_ROOT = '/var/www/static'
+
+MEDIA_ROOT = '/var/www/media'
+
+```
+
 
 ログファイルにエラーを書くようにするので、ログファイル作成と権限の設定
 
 ```
-touch /var/log/django.log
+sudo touch /var/log/django.log
 sudo chmod 777 /var/log/django.log
 ```
 
-runserverコマンドで、動作を確認してみる
+gunicornコマンドで、動作を確認してみる
 ```
-cd gourp_e
-sudo python3.11 manage.py runserver --settings=conf.production_settings
+cd group_e
+/usr/local/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 conf.wsgi:application --env DJANGO_SETTINGS_MODULE=conf.production_settings
 ```
 
 ブラウザでアクセスすると500エラーになる。これは Django側でエラーがあった場合に見るエラー。ログファイルを確認してみる
@@ -179,6 +239,8 @@ ALTER ROLE django_user SET default_transaction_isolation TO 'read committed';
 ALTER ROLE django_user SET timezone TO 'UTC';
 GRANT ALL PRIVILEGES ON DATABASE djangodb TO django_user;
 ```
+
+Ctrl + Z などで、ポスグレ画面から抜けます、
 
 認証方式を少しかえる
 ```
