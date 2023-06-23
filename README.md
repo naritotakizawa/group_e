@@ -145,6 +145,7 @@ git clone https://github.com/naritotakizawa/group_e
 本番環境ようのsettingsを作成する
 
 ```commandline
+cd group_e
 nano conf/production_settings.py
 ```
 
