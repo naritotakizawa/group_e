@@ -212,7 +212,6 @@ sudo chmod 777 /var/log/django.log
 
 gunicornコマンドで、動作を確認してみる
 ```
-cd group_e
 /usr/local/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 conf.wsgi:application --env DJANGO_SETTINGS_MODULE=conf.production_settings
 ```
 
