@@ -35,9 +35,11 @@ Ubuntu, 22.04 LTS で動作を確認しています。
 
 ### 手順
 
+```
        →      →
 ブラウザ   Nginx   Gunicorn+Django
        ←       ←
+```
        
 #### 初期設定
 
